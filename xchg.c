@@ -23,7 +23,7 @@ int main(int argc, char *argv[])
 {
     int c, verbose, numfiles;
 
-    while ((c = getopt (argc, argv, "vV")) != -1) {
+    while ((c = getopt(argc, argv, "vV")) != -1) {
         switch (c) {
         case 'v':
             verbose = 1;
