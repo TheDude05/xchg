@@ -1,14 +1,16 @@
 #define _GNU_SOURCE
 
-#define VERSION "0.1.0"
+#define VERSION "0.2.0"
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <unistd.h>
 #include <sys/syscall.h>
 #include <errno.h>
 #include <sysexits.h>
 #include <string.h>
 #include <fcntl.h>
+#include <libgen.h>
 
 #define RENAME_NOREPLACE    1   /* Don't overwrite target */
 #define RENAME_EXCHANGE     2   /* Exchange source and dest */
@@ -22,11 +24,15 @@ int renameat2(int olddir, const char *oldname,
 int main(int argc, char *argv[])
 {
     int c, verbose, numfiles;
+    char *postname = NULL;
 
-    while ((c = getopt(argc, argv, "vV")) != -1) {
+    while ((c = getopt(argc, argv, "vVn:")) != -1) {
         switch (c) {
         case 'v':
             verbose = 1;
+            break;
+        case 'n':
+            postname = optarg;
             break;
         case 'V':
             printf("Version: %s\n", VERSION);
@@ -64,6 +70,35 @@ int main(int argc, char *argv[])
                             errno, strerror(errno));
             return EX_OSERR;
         }
+    }
+
+    // Rename former destination with new name
+    // Ex: "foo" becomes "bar", "bar" becomes "foo"
+    //      rename "foo" to postname
+    if (postname) {
+        //TODO This is terribly written
+        int dstfd;
+        size_t dstsz = strlen(argv[optind+1]);
+        char *dst = (char *) malloc(dstsz + 1);
+
+        strncpy(dst, argv[optind+1], dstsz);
+        dirname(dst);    // dirname clobbers its argument
+
+        dstfd = open(dst, O_NOFOLLOW);
+        if (dstfd == -1) {
+            printf("Error %d - %s\n", errno, strerror(errno));
+            return EX_OSERR;
+        }
+        free(dst);
+
+        //TODO Add verbose logging here for the rename
+        if (renameat2(AT_FDCWD, argv[optind+1],
+                    dstfd, postname, RENAME_NOREPLACE) == -1) {
+            printf("Cannot exchange files. Error %d - %s\n",
+                            errno, strerror(errno));
+            return EX_OSERR;
+        }
+        close(dstfd);
     }
 
     return EX_OK;
