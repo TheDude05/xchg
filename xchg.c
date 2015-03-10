@@ -56,11 +56,10 @@ int main(int argc, char *argv[])
 
     if (do_exchange(argv[optind], argv[optind+1]) != 0) {
         if (errno == ENOSYS) {
-            // If we get here its likely because 1) the kernel does not support
-            // renameat2 or 2) the underlying filesystem does not support
-            // atomic exchange. We should provide more information
+            // If we get here its likely because the kernel does not support
+            // renameat2
             printf("Cannot exchange files\n\nConfirm your kernel "
-                    "supports the `renameat2` syscall *and* that "
+                    "supports the `renameat2` syscall and that "
                     "your filesystem supports atomic exchange");
             return EX_OSERR;
         } else {
