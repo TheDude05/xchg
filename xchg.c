@@ -19,6 +19,12 @@ int renameat2(int olddir, const char *oldname,
     return syscall(SYS_renameat2, olddir, oldname, newdir, newname, flags);
 }
 
+int do_exchange(char *src, char *dst) {
+    //TODO(ajw) What does this do to timestamps? (i.e mtime, atime, etc)
+    //TODO(ajw) What about extended attributes like "immutable"?
+    return renameat2(AT_FDCWD, src, AT_FDCWD, dst, RENAME_EXCHANGE);
+}
+
 int main(int argc, char *argv[])
 {
     int c, verbose, numfiles;
@@ -48,12 +54,7 @@ int main(int argc, char *argv[])
     if (verbose)
         printf("Exchanging %s <-> %s\n", argv[optind], argv[optind+1]);
 
-
-    //TODO(ajw) What does this do to timestamps? (i.e mtime, atime, etc)
-    //TODO(ajw) What about extended attributes like "immutable"?
-    
-    if (renameat2(AT_FDCWD, argv[optind],
-                    AT_FDCWD, argv[optind+1], RENAME_EXCHANGE) == -1) {
+    if (do_exchange(argv[optind], argv[optind+1]) != 0) {
         if (errno == ENOSYS) {
             // If we get here its likely because 1) the kernel does not support
             // renameat2 or 2) the underlying filesystem does not support
