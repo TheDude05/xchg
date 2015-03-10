@@ -44,10 +44,10 @@ int main(int argc, char *argv[])
 
     numfiles = argc - optind;
     if (numfiles > 2) {
-        printf("Too many file arguments provided\n");
+        fprintf(stderr, "Too many file arguments provided\n");
         return EX_USAGE;
     } else if (numfiles < 2) {
-        printf("Must provide source and destination\n");
+        fprintf(stderr, "Must provide source and destination\n");
         return EX_USAGE;
     }
 
@@ -58,12 +58,12 @@ int main(int argc, char *argv[])
         if (errno == ENOSYS) {
             // If we get here its likely because the kernel does not support
             // renameat2
-            printf("Cannot exchange files\n\nConfirm your kernel "
+            fprintf(stderr, "Cannot exchange files\n\nConfirm your kernel "
                     "supports the `renameat2` syscall and that "
                     "your filesystem supports atomic exchange");
             return EX_OSERR;
         } else {
-            printf("Cannot exchange files. Error %d - %s\n",
+            fprintf(stderr, "Cannot exchange files. Error %d - %s\n",
                             errno, strerror(errno));
             return EX_OSERR;
         }
