@@ -46,9 +46,12 @@ int main(int argc, char *argv[])
     }
 
     if (verbose)
-        printf("Exchanging %s with %s\n", argv[optind], argv[optind+1]);
+        printf("Exchanging %s <-> %s\n", argv[optind], argv[optind+1]);
 
 
+    //TODO(ajw) What does this do to timestamps? (i.e mtime, atime, etc)
+    //TODO(ajw) What about extended attributes like "immutable"?
+    
     if (renameat2(AT_FDCWD, argv[optind],
                     AT_FDCWD, argv[optind+1], RENAME_EXCHANGE) == -1) {
         if (errno == ENOSYS) {
