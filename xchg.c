@@ -11,11 +11,8 @@
 #include <string.h>
 #include <fcntl.h>
 #include <libgen.h>
+#include <linux/fs.h>
 #include <linux/limits.h>
-
-//TODO Replace this with <linux/fs.h>
-#define RENAME_NOREPLACE    1   /* Don't overwrite target */
-#define RENAME_EXCHANGE     2   /* Exchange source and dest */
 
 int renameat2(int olddir, const char *oldname,
                 int newdir, const char *newname, unsigned int flags)
