@@ -10,6 +10,7 @@
 #include <string.h>
 #include <fcntl.h>
 
+//TODO Replace this with <linux/fs.h>
 #define RENAME_NOREPLACE    1   /* Don't overwrite target */
 #define RENAME_EXCHANGE     2   /* Exchange source and dest */
 
@@ -19,7 +20,8 @@ int renameat2(int olddir, const char *oldname,
     return syscall(SYS_renameat2, olddir, oldname, newdir, newname, flags);
 }
 
-int do_exchange(char *src, char *dst) {
+int do_exchange(char *src, char *dst)
+{
     //TODO(ajw) What does this do to timestamps? (i.e mtime, atime, etc)
     //TODO(ajw) What about extended attributes like "immutable"?
     return renameat2(AT_FDCWD, src, AT_FDCWD, dst, RENAME_EXCHANGE);
@@ -60,7 +62,7 @@ int main(int argc, char *argv[])
             // renameat2
             fprintf(stderr, "Cannot exchange files\n\nConfirm your kernel "
                     "supports the `renameat2` syscall and that "
-                    "your filesystem supports atomic exchange");
+                    "your filesystem supports atomic exchange\n");
             return EX_OSERR;
         } else {
             fprintf(stderr, "Cannot exchange files. Error %d - %s\n",
