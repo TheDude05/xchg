@@ -78,7 +78,7 @@ int main(int argc, char *argv[])
     }
 
     if (verbose)
-        printf("Exchanging %s <-> %s\n", argv[optind], argv[optind+1]);
+        printf("‘%s‘ <-> ‘%s‘\n", argv[optind], argv[optind+1]);
 
     if (do_exchange(argv[optind], argv[optind+1]) != 0) {
         if (errno == ENOSYS) {
@@ -96,8 +96,10 @@ int main(int argc, char *argv[])
     }
 
     if (pname) {
+        if (verbose)
+            printf("‘%s‘ -> ‘%s‘\n", argv[optind], newname);
+
         if (do_rename(argv[optind], newname) != 0) {
-            printf("Rename error\n");
             if (errno == ENOSYS) {
                 // If we get here its likely because the kernel does not support
                 // renameat2
