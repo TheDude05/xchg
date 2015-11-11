@@ -1,0 +1,7 @@
+[package]
+name = "xchg"
+version = "0.1.0"
+authors = ["Andrew Williams <williams.andrew@gmail.com>"]
+
+[dependencies]
+getopts = "0.2"
